@@ -203,6 +203,7 @@ dl.onclick = function() {
       value = value.substr(2);
       downlink(value, 2, slcDevice.value, 3600, function(e, success) {
             curAck++;
+            if (curAck === 15) curAck = 0;
             resetAll();
             alrtStatus.set(success ? 'Downlink sent successfully' : e, success ? 'success' : 'danger');
       });
@@ -220,6 +221,7 @@ clipy.onclick = function() {
       document.execCommand('copy');
       tf.value = hexFormatWithSpaces('0x' + value);
       curAck++;
+      if (curAck === 15) curAck = 0;
 };
 
 function hexFormatWithSpaces(hexString) {
