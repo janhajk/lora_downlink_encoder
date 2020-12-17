@@ -300,7 +300,35 @@ const schemes = {
                                                 }],
                                                 len: 4
                                           }
+                                    },
+                                    {
+                                          title: 'confirmed_ul_retry',
+                                          description: 'The number of retries for each confirmed uplinkwhen the confirmation is not received',
+                                          value: 0x13,
+                                          child: {
+                                                type: 'range::0:8',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'network_timeout_check ',
+                                          description: 'Time without received downlink, before asking a link check request 0: No timeout check is done',
+                                          value: 0x1F,
+                                          child: {
+                                                type: 'range:s:0:5184000',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'network_timeout_reset',
+                                          description: 'Time after network_timeout_checkwithout received downlink\n before the tracker resets 0: feature deactivated',
+                                          value: 0x20,
+                                          child: {
+                                                type: 'range:s:0:2592000',
+                                                len: 4
+                                          }
                                     }
+
                               ]
                         }
                   }
