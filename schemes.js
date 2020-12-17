@@ -182,11 +182,122 @@ const schemes = {
                                           }
                                     },
                                     {
-                                          title: 'collection_ble_filter_main_2',
-                                          value: 0x25,
+                                          title: 'collection_ble_filter_sec_value',
+                                          value: 0x26,
                                           child: {
-                                                title: 'Part 2 BLE filter',
+                                                title: 'BLE secondary value.',
                                                 type: 'input:8',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'collection_ble_filter_sec_mask',
+                                          value: 0x27,
+                                          child: {
+                                                title: 'BLE secondary mask',
+                                                type: 'input:8',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'gnss_constellation',
+                                          value: 0x2A,
+                                          child: {
+                                                title: 'Beacon type to scan',
+                                                value: [{
+                                                      title: 'GPS only',
+                                                      value: 0x00
+                                                }, {
+                                                      title: 'GLONASS only',
+                                                      value: 0x01
+                                                }, {
+                                                      title: 'GPS and GLONASS',
+                                                      value: 0x02
+                                                }, {
+                                                      title: 'GPS and Galileo',
+                                                      value: 0x03
+                                                }, {
+                                                      title: 'GPS, GLONASS and Galileo',
+                                                      value: 0x04
+                                                }, {
+                                                      title: 'Beidou only',
+                                                      value: 0x05
+                                                }, {
+                                                      title: 'GPS and Beidou',
+                                                      value: 0x06
+                                                }],
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'gps_timeout',
+                                          description: 'Timeout for GPS scans before sending a GPS timeout message.',
+                                          value: 0x09,
+                                          child: {
+                                                type: 'range:s:30:300',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'gps_ehpe',
+                                          description: 'Acceptable GPS horizontal error for GPS geolocation',
+                                          value: 0x0B,
+                                          child: {
+                                                type: 'range:m:0:100',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'gps_convergence',
+                                          description: 'Time let to the GPS module to refine the calculated position',
+                                          value: 0x0C,
+                                          child: {
+                                                type: 'range:s:0:300',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'gps_standby_timeout',
+                                          description: 'Duration of the GPS standby mode before going OFF.When 0, no standby timeout is applied',
+                                          value: 0x11,
+                                          child: {
+                                                type: 'range:s:0:28800',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'agps_timeou',
+                                          description: 'Timeout for LPGPSscans before sending thetimeout message',
+                                          value: 0x0A,
+                                          child: {
+                                                type: 'range:s:30:250',
+                                                len: 4
+                                          }
+                                    },
+                                    {
+                                          title: 'Lora: transmit_strat',
+                                          value: 0x0E,
+                                          child: {
+                                                title: 'LoRa parameters',
+                                                value: [{
+                                                      title: 'Single fixed. Single TX. Using a fixed data rate',
+                                                      value: 0x00
+                                                }, {
+                                                      title: 'Single random: Single TX. Using a random data rate within [DR0-DR5]',
+                                                      value: 0x01
+                                                }, {
+                                                      title: 'Dual random: First TX using a random data rate within [DR4-DR5], next TX using a random data rate within[DR0-DR3]',
+                                                      value: 0x02
+                                                }, {
+                                                      title: 'Dual fixed: First TX using a random data rate within [DR4-DR5]. Next Using a fixeddata rate. (not recommended)',
+                                                      value: 0x03
+                                                }, {
+                                                      title: 'Network ADR. The LoRaWANTMnetwork controls the number oftransmissions',
+                                                      value: 0x04
+                                                }, {
+                                                      title: 'Activate the strategy defined with transmit_strat_customparameter',
+                                                      value: 0x05
+                                                }],
                                                 len: 4
                                           }
                                     }
