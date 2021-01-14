@@ -2,6 +2,8 @@
 
 const STORAGEKEY = 'cfgDistributor';
 
+let Ack, ack, getConfig, updateConfig, DeviceSelector, deviceSelector, configDistributor, configDevices;
+
 let ConfItem = function(properties, parent, level) {
       let self = this;
       this.level = level;
@@ -161,9 +163,10 @@ let div = document.getElementById('dropdown1');
 
 let conf;
 let alrtStatus = new Status(document.getElementsByTagName('body')[0]);
-resetAll();
+
 $(document).ready(function() {
       $('[data-toggle="tooltip"]').tooltip();
+            resetAll();
 });
 
 
@@ -194,7 +197,7 @@ function resetAll() {
             let dom = document.getElementById('dropdown' + i);
             if (dom !== null) dom.innerHTML = '';
       }
-      conf = new ConfItem(schemes, encoded, 0);
+      conf = new ConfItem(schemes[deviceSelector.scheme()], encoded, 0);
       div.appendChild(conf.dom().container);
       encoded.value = '<HEX>';
 }
@@ -356,7 +359,7 @@ function downlink(payload, port, thingId, validity, next) {
  *
  *
  */
-let Ack = function() {
+Ack = function() {
       let frame;
       let lastFrame = localStorage.getItem('loraAck');
       if (lastFrame === null) {
@@ -373,11 +376,11 @@ let Ack = function() {
       };
       this.get = () => parseInt(frame, 10);
 };
-let ack = new Ack();
+ack = new Ack();
 
 
 
-let getConfig = function() {
+getConfig = function() {
 
       let cfg = localStorage.getItem(STORAGEKEY);
       if (cfg !== null) cfg = JSON.parse(cfg);
@@ -399,7 +402,7 @@ let getConfig = function() {
  * overwrites existing
  *
  */
-let updateConfig = function(params) {
+updateConfig = function(params) {
       let conf = getConfig();
       if (conf === null) conf = {}; // first time?
       for (let i in params) {
@@ -430,11 +433,12 @@ let updateConfig = function(params) {
  *
  *
  */
-let DeviceSelector = function() {
+DeviceSelector = function() {
       let slcDevice = document.getElementById('slcDevice');
       let select;
       let devices = getConfig().devices;
       let curVal = devices.length ? (devices[0].id || devices[0].devEui) : false;
+      let curScheme = devices.length ? (devices[0].device_type || devices[0].type) : false;
       this.update = function() {
             slcDevice.innerHTML = '';
             select = document.createElement('select');
@@ -462,13 +466,12 @@ let DeviceSelector = function() {
             });
 
       };
-      this.value = function() {
-            return curVal;
-      };
+      this.value = () => curVal;
+      this.scheme = () => curScheme;
 
 };
 
-let deviceSelector = new DeviceSelector();
+deviceSelector = new DeviceSelector();
 deviceSelector.update();
 
 
@@ -479,7 +482,7 @@ deviceSelector.update();
  *
  */
 
-let configDistributor = function() {
+configDistributor = function() {
       let fields = getConfig();
       delete fields.devices;
 
@@ -563,7 +566,7 @@ configDistributor();
  *
  */
 
-let configDevices = function() {
+configDevices = function() {
       let fields = {
             name: {},
             id: {},

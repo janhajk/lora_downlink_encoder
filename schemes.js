@@ -13,7 +13,7 @@
  */
 
 
-const schemes = {
+const schemes = {abeeway_compact: {
       title: 'Message Type',
       value: [{
                   title: 'POD',
@@ -339,4 +339,4 @@ const schemes = {
                   description: 'Reset the Tracker'
             }
       ]
-};
+}};
