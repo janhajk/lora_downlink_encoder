@@ -1,6 +1,23 @@
-/* global $, schemes, DEVICES, APP_TOKEN, deviceWiseEndpoint, APP_ID, THING_KEY */
+/* global $, schemes, DEVICES, APP_TOKEN, deviceWiseEndpoint, APP_ID, THING_KEY, localStorage */
 
-let curAck = 0;
+let Ack = function() {
+      let frame;
+      let lastFrame = localStorage.getItem('loraAck');
+      if (lastFrame === null) {
+            frame = 0;
+            localStorage.setItem('loraAck', 0);
+      }
+      this.inc = function() {
+            let lastFrame = parseInt(localStorage.getItem('loraAck'), 10);
+            frame = lastFrame + 1;
+            if (frame > 14) frame = 0;
+            localStorage.setItem('loraAck', frame);
+            return frame;
+      };
+      this.get = () => { return parseInt(frame, 10) };
+};
+let ack = new Ack();
+
 let ConfItem = function(properties, parent, level) {
       let self = this;
       this.level = level;
@@ -33,8 +50,8 @@ let ConfItem = function(properties, parent, level) {
                   widget = new dropdown();
                   widget.addOption(titleOption());
                   let option = document.createElement('option');
-                  option.value = curAck + 1;
-                  option.innerHTML = '0x' + formatHex(curAck + 1) + ' - ack';
+                  option.value = ack.get();
+                  option.innerHTML = '0x' + formatHex(ack.get()) + ' - ack';
                   widget.addOption(option);
             }
             // Range slider <DIV>
@@ -73,6 +90,7 @@ let ConfItem = function(properties, parent, level) {
                   for (let i = 0; i < self.value.length; i++) {
                         let option = document.createElement('option');
                         option.value = self.value[i].value.toString(10); // 1-255
+                        option.setAttribute('title', self.value[i].description);
                         option.innerHTML = '0x' + formatHex(self.value[i].value) + ' - ' + self.value[i].title;
                         widget.addOption(option);
                   }
@@ -81,7 +99,7 @@ let ConfItem = function(properties, parent, level) {
                   widget = '<div></div>';
             }
             if (widget.type === 'dropdown') {
-                  widget.select.onclick = function() {
+                  $(widget.select).on('select2:select', function() {
                         if (this.value === 'null') return;
                         self.currentSelectionByte = parseInt(this.value, 10);
                         let conf;
@@ -120,7 +138,19 @@ let ConfItem = function(properties, parent, level) {
                         else {
                               self.update('');
                         }
-                  };
+                  });
+                  $(widget.select).select2({
+                        width: '100%',
+                        templateResult: function(state) {
+                              if (!state.id) {
+                                    return state.text;
+                              }
+                              var $state = $(
+                                    '<span>' + state.text + '</span><br /><i><span>' + state.title + '</span></i>'
+                              );
+                              return $state;
+                        }
+                  });
             }
             return widget;
       };
@@ -202,8 +232,7 @@ dl.onclick = function() {
       value = value.replace(/\s/g, '');
       value = value.substr(2);
       downlink(value, 2, slcDevice.value, 3600, function(e, success) {
-            curAck++;
-            if (curAck === 15) curAck = 0;
+            ack.inc();
             resetAll();
             alrtStatus.set(success ? 'Downlink sent successfully' : e, success ? 'success' : 'danger');
       });
@@ -220,8 +249,7 @@ clipy.onclick = function() {
       tf.setSelectionRange(0, 99999);
       document.execCommand('copy');
       tf.value = hexFormatWithSpaces('0x' + value);
-      curAck++;
-      if (curAck === 15) curAck = 0;
+      ack.inc();
 };
 
 function hexFormatWithSpaces(hexString) {
@@ -241,6 +269,8 @@ function dropdown() {
       this.type = 'dropdown';
       this.container = document.createElement('div');
       this.select = document.createElement('select');
+      this.container.width = '100%';
+      this.select.width = '100%';
       this.label = document.createElement('label');
       this.container.appendChild(this.select);
       this.container.appendChild(this.label);
