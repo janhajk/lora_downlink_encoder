@@ -1,31 +1,10 @@
 /* global $, schemes, DEVICES, APP_TOKEN, deviceWiseEndpoint, APP_ID, THING_KEY, localStorage */
 
-let Ack = function() {
-      let frame;
-      let lastFrame = localStorage.getItem('loraAck');
-      if (lastFrame === null) {
-            frame = 0;
-            localStorage.setItem('loraAck', 0);
-      }
-      else frame = lastFrame;
-      console.log('Initial Frame: ' + frame);
-      this.inc = function() {
-            let lastFrame = parseInt(localStorage.getItem('loraAck'), 10);
-            frame = lastFrame + 1;
-            if (frame > 14) frame = 0;
-            localStorage.setItem('loraAck', frame);
-            return frame;
-      };
-      this.get = () => { return parseInt(frame, 10) };
-};
-let ack = new Ack();
-
 let ConfItem = function(properties, parent, level) {
       let self = this;
       this.level = level;
       this.currentSelectionByte = null;
       let formatHex = function(hex, amount) {
-            console.log('Number: ' + hex + '; amount: ' + amount);
             if (amount === undefined || amount === null) { amount = 2; }
             else amount = 2 * amount;
             // let len = hex.toString(16).length;
@@ -314,16 +293,17 @@ function slider(min, max) {
 
 
 function downlink(payload, port, thingId, validity, next) {
+      let config = getConfig();
       $.ajax({
                   type: "POST",
-                  url: deviceWiseEndpoint,
+                  url: config.endpoint,
                   data: JSON.stringify({
                         auth: {
                               command: "api.authenticate",
                               params: {
-                                    appToken: APP_TOKEN,
-                                    appId: APP_ID,
-                                    thingKey: THING_KEY
+                                    appToken: config.app_token,
+                                    appId: config.app_id,
+                                    thingKey: config.thing_key
                               }
                         }
                   }),
@@ -370,3 +350,132 @@ function downlink(payload, port, thingId, validity, next) {
                   return next(error, false);
             });
 }
+
+
+/**
+ *
+ * Object for ack
+ * stores current ack to persistens browser storage
+ *
+ *
+ */
+let Ack = function() {
+      let frame;
+      let lastFrame = localStorage.getItem('loraAck');
+      if (lastFrame === null) {
+            frame = 0;
+            localStorage.setItem('loraAck', 0);
+      }
+      else frame = lastFrame;
+      this.inc = function() {
+            let lastFrame = parseInt(localStorage.getItem('loraAck'), 10);
+            frame = lastFrame + 1;
+            if (frame > 14) frame = 0;
+            localStorage.setItem('loraAck', frame);
+            return frame;
+      };
+      this.get = () => parseInt(frame, 10);
+};
+let ack = new Ack();
+
+
+
+let getConfig = function() {
+      const storageKey = 'cfgDistributor';
+
+      let cfg = localStorage.getItem(storageKey);
+      if (cfg !== null) cfg = JSON.parse(cfg);
+
+
+      let fields = {
+            endpoint: { value: cfg !== null && cfg.endpoint !== undefined ? cfg.endpoint : deviceWiseEndpoint !== undefined ? deviceWiseEndpoint : '' },
+            app_token: { value: cfg !== null && cfg.app_token !== undefined ? cfg.app_token : APP_TOKEN !== undefined ? APP_TOKEN : '' },
+            app_id: { value: cfg !== null && cfg.app_id !== undefined ? cfg.app_id : APP_ID !== undefined ? APP_ID : '' },
+            thing_key: { value: cfg !== null && cfg.thing_key !== undefined ? cfg.thing_key : THING_KEY !== undefined ? THING_KEY : '' },
+      };
+      return fields;
+};
+
+
+
+/**
+ *
+ *
+ *
+ *
+ */
+
+let configDistributor = function() {
+      let fields = getConfig();
+
+      let parentDom = document.getElementById('configForm');
+      parentDom.innerHTML = '';
+      let textfield = function(title, value) {
+            let group = document.createElement('div');
+            group.className = 'col-sm-6 form-group';
+            let label = document.createElement('label');
+            label.className = 'form-control-label';
+            label.innerHTML = title;
+            let input = document.createElement('input');
+            input.className = 'form-control';
+            input.type = 'text';
+            input.value = value;
+            input.placeholder = title;
+            group.appendChild(label);
+            group.appendChild(input);
+            return group;
+      };
+      let rowDom = function() {
+            let row = document.createElement('div');
+            row.className = 'row';
+            return row;
+      };
+      let rowCounter = 0;
+      let row = rowDom();
+      parentDom.append(row);
+      for (let key in fields) {
+            let dom;
+            if (fields[key].type === 'dropdown') {
+                  dom = dropdown(key, fields[key].data, fields[key].key, fields[key].value);
+            }
+            else {
+                  dom = textfield(key, fields[key].value);
+            }
+            fields[key].dom = dom;
+            row.appendChild(dom);
+            // New row after every two fields
+            if (rowCounter % 2 > 0) {
+                  row = rowDom();
+                  parentDom.appendChild(row);
+            }
+            rowCounter++;
+      }
+      // submit button
+      let group = document.createElement('div');
+      group.className = 'form-group';
+      let button = document.createElement('button');
+      button.className = 'btn btn-info';
+      button.type = 'submit';
+      button.innerHTML = 'Save Config';
+      group.appendChild(button);
+      button.onclick = function() {
+            let params = {};
+            for (let key in fields) {
+                  if (fields[key].type === 'dropdown') {
+                        let values = $(fields[key].dom).find('select').select2('data');
+                        params[key] = []
+                        for (let i in values) {
+                              params[key].push(values[i].id);
+                        }
+                  }
+                  else {
+                        params[key] = $(fields[key].dom).find('input').val();
+                  }
+            }
+            console.log(params);
+            localStorage.setItem(storageKey, JSON.stringify(params));
+      };
+      parentDom.append(group);
+
+};
+configDistributor();
