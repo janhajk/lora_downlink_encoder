@@ -7,6 +7,8 @@ let Ack = function() {
             frame = 0;
             localStorage.setItem('loraAck', 0);
       }
+      else frame = lastFrame;
+      console.log('Initial Frame: ' + frame);
       this.inc = function() {
             let lastFrame = parseInt(localStorage.getItem('loraAck'), 10);
             frame = lastFrame + 1;
@@ -23,6 +25,7 @@ let ConfItem = function(properties, parent, level) {
       this.level = level;
       this.currentSelectionByte = null;
       let formatHex = function(hex, amount) {
+            console.log('Number: ' + hex + '; amount: ' + amount);
             if (amount === undefined || amount === null) { amount = 2; }
             else amount = 2 * amount;
             // let len = hex.toString(16).length;
@@ -51,12 +54,12 @@ let ConfItem = function(properties, parent, level) {
                   widget.addOption(titleOption());
                   let option = document.createElement('option');
                   option.value = ack.get();
-                  option.innerHTML = '0x' + formatHex(ack.get()) + ' - ack';
+                  option.innerHTML = '0x' + formatHex(parseInt(ack.get(), 10)) + ' - ack';
                   widget.addOption(option);
             }
             // Range slider <DIV>
             else if (self.type !== undefined) {
-                  let type = self.type.split(':');
+                  let type = self.type.split(':'); // Format: range:unit:min:max
                   if (type[0] === 'range') {
                         let slider1 = slider(type[2], type[3]); // slide(min, max), returns [ slidercointainer <div>, input <input>, value <span> ]
                         widget = slider1[0];
