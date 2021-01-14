@@ -78,18 +78,27 @@
     <div class="body-container">
       <div class="mat-card"><h1>LoRaWAN Device Configurator</h1></div>
       <div class="mat-card">
-        <button data-toggle="collapse" data-target="#configForm">Config Distributor</button>
+        <button data-toggle="collapse" data-target="#configForm">Config</button>
         <div id="configForm" class="collapse">
-          stuff
+          <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#mnDistributor">Distributor</a></li>
+            <li><a data-toggle="tab" href="#mnDevices">Devices</a></li>
+          </ul>
+          <div class="tab-content">
+            <div id="mnDistributor" class="tab-pane fade in active">
+              <div id="configFormDistributor"></div>
+            </div>
+            <div id="mnDevices" class="tab-pane fade">
+              <div id="configFormDevices"></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="mat-card">
         <div>
           Select your Device to config:
         </div>
-        <div>
-          <select id="slcDevice">
-          </select>
+        <div id="slcDevice">
         </div>
       </div>
       <div class="mat-card">

@@ -1,5 +1,7 @@
 /* global $, schemes, DEVICES, APP_TOKEN, deviceWiseEndpoint, APP_ID, THING_KEY, localStorage */
 
+const STORAGEKEY = 'cfgDistributor';
+
 let ConfItem = function(properties, parent, level) {
       let self = this;
       this.level = level;
@@ -155,13 +157,8 @@ let ConfItem = function(properties, parent, level) {
 
 let encoded = document.getElementById('encoded');
 let div = document.getElementById('dropdown1');
-let slcDevice = document.getElementById('slcDevice');
-for (let i = 0; i < DEVICES.length; i++) {
-      let option = document.createElement('option');
-      option.innerHTML = DEVICES[i].name + ' - ' + DEVICES[i].devEui;
-      option.value = DEVICES[i].devEui;
-      slcDevice.appendChild(option);
-}
+
+
 let conf;
 let alrtStatus = new Status(document.getElementsByTagName('body')[0]);
 resetAll();
@@ -213,7 +210,7 @@ dl.onclick = function() {
       let value = tf.value;
       value = value.replace(/\s/g, '');
       value = value.substr(2);
-      downlink(value, 2, slcDevice.value, 3600, function(e, success) {
+      downlink(value, 2, deviceSelector.value(), 3600, function(e, success) {
             ack.inc();
             resetAll();
             alrtStatus.set(success ? 'Downlink sent successfully' : e, success ? 'success' : 'danger');
@@ -296,14 +293,14 @@ function downlink(payload, port, thingId, validity, next) {
       let config = getConfig();
       $.ajax({
                   type: "POST",
-                  url: config.endpoint,
+                  url: config.endpoint.value,
                   data: JSON.stringify({
                         auth: {
                               command: "api.authenticate",
                               params: {
-                                    appToken: config.app_token,
-                                    appId: config.app_id,
-                                    thingKey: config.thing_key
+                                    appToken: config.app_token.value,
+                                    appId: config.app_id.value,
+                                    thingKey: config.thing_key.value
                               }
                         }
                   }),
@@ -381,34 +378,112 @@ let ack = new Ack();
 
 
 let getConfig = function() {
-      const storageKey = 'cfgDistributor';
 
-      let cfg = localStorage.getItem(storageKey);
+      let cfg = localStorage.getItem(STORAGEKEY);
       if (cfg !== null) cfg = JSON.parse(cfg);
 
 
       let fields = {
-            endpoint: { value: cfg !== null && cfg.endpoint !== undefined ? cfg.endpoint : deviceWiseEndpoint !== undefined ? deviceWiseEndpoint : '' },
-            app_token: { value: cfg !== null && cfg.app_token !== undefined ? cfg.app_token : APP_TOKEN !== undefined ? APP_TOKEN : '' },
-            app_id: { value: cfg !== null && cfg.app_id !== undefined ? cfg.app_id : APP_ID !== undefined ? APP_ID : '' },
-            thing_key: { value: cfg !== null && cfg.thing_key !== undefined ? cfg.thing_key : THING_KEY !== undefined ? THING_KEY : '' },
+            endpoint: { value: cfg !== null && cfg.endpoint !== undefined ? cfg.endpoint.value : deviceWiseEndpoint !== undefined ? deviceWiseEndpoint : '' },
+            app_token: { value: cfg !== null && cfg.app_token !== undefined ? cfg.app_token.value : APP_TOKEN !== undefined ? APP_TOKEN : '' },
+            app_id: { value: cfg !== null && cfg.app_id !== undefined ? cfg.app_id.value : APP_ID !== undefined ? APP_ID : '' },
+            thing_key: { value: cfg !== null && cfg.thing_key !== undefined ? cfg.thing_key.value : THING_KEY !== undefined ? THING_KEY : '' },
+            devices: cfg !== null && cfg.devices !== undefined ? cfg.devices : DEVICES !== undefined ? DEVICES : '',
       };
       return fields;
 };
 
 
+/**
+ * adds new information to config
+ * overwrites existing
+ *
+ */
+let updateConfig = function(params) {
+      let conf = getConfig();
+      if (conf === null) conf = {}; // first time?
+      for (let i in params) {
+            if (i === 'devices') {
+                  let isNew = true;
+                  for (let r in conf.devices) {
+                        if (conf.devices[r].name === params[i].name) {
+                              isNew = false;
+                              break;
+                        }
+                  }
+                  if (isNew) {
+                        conf[i].push(params[i]);
+                  }
+            }
+            else {
+                  conf[i].value = params[i];
+            }
+      }
+      conf = JSON.stringify(conf);
+      localStorage.setItem(STORAGEKEY, conf);
+};
+
+
+/**
+ * Dropdown to select active device
+ *
+ *
+ *
+ */
+let DeviceSelector = function() {
+      let slcDevice = document.getElementById('slcDevice');
+      let select;
+      let devices = getConfig().devices;
+      let curVal = devices.length ? (devices[0].id || devices[0].devEui) : false;
+      this.update = function() {
+            slcDevice.innerHTML = '';
+            select = document.createElement('select');
+            devices = getConfig().devices;
+            for (let i in devices) {
+                  let option = document.createElement('option');
+                  option.innerHTML = devices[i].name;
+                  option.title = devices[i].id || devices[i].devEui;
+                  option.value = devices[i].id || devices[i].devEui;
+                  select.appendChild(option);
+            }
+            slcDevice.appendChild(select);
+            $(select).select2({
+                  width: '100%',
+                  templateResult: function(item) {
+                        console.log(item);
+                        var $state = $(
+                              '<span>' + item.text + '</span><br /><i><span>' + item.title + '</span></i>'
+                        );
+                        return $state;
+                  }
+            });
+            $(select).on('select2:select', function() {
+                  curVal = this.value;
+            });
+
+      };
+      this.value = function() {
+            return curVal;
+      };
+
+};
+
+let deviceSelector = new DeviceSelector();
+deviceSelector.update();
+
 
 /**
  *
- *
+ * configure form for the distributor
  *
  *
  */
 
 let configDistributor = function() {
       let fields = getConfig();
+      delete fields.devices;
 
-      let parentDom = document.getElementById('configForm');
+      let parentDom = document.getElementById('configFormDistributor');
       parentDom.innerHTML = '';
       let textfield = function(title, value) {
             let group = document.createElement('div');
@@ -463,7 +538,7 @@ let configDistributor = function() {
             for (let key in fields) {
                   if (fields[key].type === 'dropdown') {
                         let values = $(fields[key].dom).find('select').select2('data');
-                        params[key] = []
+                        params[key] = [];
                         for (let i in values) {
                               params[key].push(values[i].id);
                         }
@@ -473,9 +548,107 @@ let configDistributor = function() {
                   }
             }
             console.log(params);
-            localStorage.setItem(storageKey, JSON.stringify(params));
+            updateConfig(params);
       };
       parentDom.append(group);
 
 };
 configDistributor();
+
+
+/**
+ *
+ * configure form for the distributor
+ *
+ *
+ */
+
+let configDevices = function() {
+      let fields = {
+            name: {},
+            id: {},
+            device_type: { type: 'dropdown', data: ['abeeway_compact'] }
+      };
+
+      let parentDom = document.getElementById('configFormDevices');
+      parentDom.innerHTML = '';
+      let textfield = function(title, placeholder) {
+            let group = document.createElement('div');
+            group.className = 'col-sm-12   form-group';
+            let label = document.createElement('label');
+            label.className = 'form-control-label';
+            label.innerHTML = title;
+            let input = document.createElement('input');
+            input.className = 'form-control';
+            input.type = 'text';
+            input.value = placeholder !== undefined ? placeholder : '';
+            input.placeholder = title;
+            group.appendChild(label);
+            group.appendChild(input);
+            return group;
+      };
+      let dropdown = function(title, source) {
+            let group = document.createElement('div');
+            group.className = 'col-sm-12 form-group';
+            let label = document.createElement('label');
+            label.className = 'form-control-label';
+            label.innerHTML = title;
+            let select = document.createElement('select');
+            select.style.width = '100%';
+            for (let i in source) {
+                  let option = document.createElement('option');
+                  option.value = source[i];
+                  option.innerHTML = source[i];
+                  select.appendChild(option);
+            }
+            group.appendChild(label);
+            group.appendChild(select);
+            $(select).select2();
+            return group;
+      };
+      let rowDom = function() {
+            let row = document.createElement('div');
+            row.className = 'row';
+            return row;
+      };
+      for (let key in fields) {
+            let row = rowDom();
+            parentDom.append(row);
+            let dom;
+            if (fields[key].type === 'dropdown') {
+                  dom = dropdown(key, fields[key].data);
+            }
+            else {
+                  dom = textfield(key, fields[key].placeholder);
+            }
+            fields[key].dom = dom;
+            row.appendChild(dom);
+            // New row after every two fields
+            parentDom.appendChild(row);
+      }
+      // submit button
+      let group = document.createElement('div');
+      group.className = 'form-group';
+      let button = document.createElement('button');
+      button.className = 'btn btn-info';
+      button.type = 'submit';
+      button.innerHTML = 'Add Device';
+      group.appendChild(button);
+      button.onclick = function() {
+            let config = getConfig().devices;
+            let params = {};
+            for (let key in fields) {
+                  if (fields[key].type === 'dropdown') {
+                        params[key] = $(fields[key].dom).find('select').select2('data')[0].text;
+                  }
+                  else {
+                        params[key] = $(fields[key].dom).find('input').val();
+                  }
+            }
+            console.log(params);
+            updateConfig({ devices: params });
+      };
+      parentDom.append(group);
+
+};
+configDevices();
