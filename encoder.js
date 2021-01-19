@@ -82,7 +82,7 @@ let ConfItem = function(properties, parent, level) {
                   }
             }
             else {
-                  widget = '<div></div>';
+                  widget = document.createElement('div');
             }
             if (widget.type === 'dropdown') {
                   $(widget.select).on('select2:select', function() {
@@ -166,7 +166,7 @@ let alrtStatus = new Status(document.getElementsByTagName('body')[0]);
 
 $(document).ready(function() {
       $('[data-toggle="tooltip"]').tooltip();
-            resetAll();
+      resetAll();
 });
 
 
@@ -333,7 +333,7 @@ function downlink(payload, port, thingId, validity, next) {
                   });
                   console.log(requestJson2);
                   return $.ajax({
-                        url: deviceWiseEndpoint,
+                        url: config.endpoint.value,
                         method: 'POST',
                         async: true,
                         dataType: 'json',
@@ -570,7 +570,7 @@ configDevices = function() {
       let fields = {
             name: {},
             id: {},
-            device_type: { type: 'dropdown', data: ['abeeway_compact'] }
+            device_type: { type: 'dropdown', data: ['abeeway_asset-tracker_2.0.0'] }
       };
 
       let parentDom = document.getElementById('configFormDevices');
