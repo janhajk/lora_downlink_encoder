@@ -395,7 +395,7 @@ getConfig = function() {
       cfg = (cfg !== null) ? JSON.parse(cfg) : {};
 
       let fields = {
-            endpoint: { value: cfg.endpoint.value || deviceWiseEndpoint || '' },
+            endpoint: { value: (cfg.endpoint && cfg.endpoint.value) || deviceWiseEndpoint || '' },
             app_token: { value: cfg.app_token.value || APP_TOKEN || '' },
             app_id: { value: cfg.app_id.value || APP_ID || '' },
             thing_key: { value: cfg.thing_key.value || THING_KEY || '' },
