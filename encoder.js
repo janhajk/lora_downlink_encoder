@@ -392,10 +392,10 @@ ack = new Ack();
 getConfig = function() {
 
       let cfg = localStorage.getItem(STORAGEKEY);
-      cfg = (cfg !== null) ? JSON.parse(cfg) : {};
+      cfg = (cfg !== null) ? JSON.parse(cfg) : {endpoint:{value:false}, app_token:{value:false}, app_id:{value:false}, thing_key:{value:false}, devices: false};
 
       let fields = {
-            endpoint: { value: (cfg.endpoint && cfg.endpoint.value) || deviceWiseEndpoint || '' },
+            endpoint: { value: cfg.endpoint || deviceWiseEndpoint || '' },
             app_token: { value: cfg.app_token.value || APP_TOKEN || '' },
             app_id: { value: cfg.app_id.value || APP_ID || '' },
             thing_key: { value: cfg.thing_key.value || THING_KEY || '' },
