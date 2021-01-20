@@ -289,6 +289,15 @@ function slider(min, max) {
 }
 
 
+const DeviceWiseConnector = function() {
+      const getToken = function() {
+            return new Promise((resolve, reject) => {
+
+            });
+      };
+};
+
+
 
 
 
@@ -383,15 +392,14 @@ ack = new Ack();
 getConfig = function() {
 
       let cfg = localStorage.getItem(STORAGEKEY);
-      if (cfg !== null) cfg = JSON.parse(cfg);
-
+      cfg = (cfg !== null) ? JSON.parse(cfg) : {};
 
       let fields = {
-            endpoint: { value: cfg !== null && cfg.endpoint !== undefined ? cfg.endpoint.value : deviceWiseEndpoint !== undefined ? deviceWiseEndpoint : '' },
-            app_token: { value: cfg !== null && cfg.app_token !== undefined ? cfg.app_token.value : APP_TOKEN !== undefined ? APP_TOKEN : '' },
-            app_id: { value: cfg !== null && cfg.app_id !== undefined ? cfg.app_id.value : APP_ID !== undefined ? APP_ID : '' },
-            thing_key: { value: cfg !== null && cfg.thing_key !== undefined ? cfg.thing_key.value : THING_KEY !== undefined ? THING_KEY : '' },
-            devices: cfg !== null && cfg.devices !== undefined ? cfg.devices : DEVICES !== undefined ? DEVICES : '',
+            endpoint: { value: cfg.endpoint.value || deviceWiseEndpoint || '' },
+            app_token: { value: cfg.app_token.value || APP_TOKEN || '' },
+            app_id: { value: cfg.app_id.value || APP_ID || '' },
+            thing_key: { value: cfg.thing_key.value || THING_KEY || '' },
+            devices: cfg.devices || DEVICES || [],
       };
       return fields;
 };
