@@ -230,6 +230,14 @@ const schemes = {
                                                       type: 'input:8',
                                                       len: 4
                                                 }
+                                          }, {
+                                                title: 'battery_capacity',
+                                                value: 0x28,
+                                                child: {
+                                                      title: 'Battery Setting',
+                                                      type: 'input:8',
+                                                      len: 4
+                                                }
                                           },
                                           {
                                                 title: 'gnss_constellation',

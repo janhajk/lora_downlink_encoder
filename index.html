@@ -103,7 +103,7 @@
       </div>
       <div class="mat-card">
         <div>
-          Select your Device to config:
+          Select your Devices to config:
         </div>
         <div id="slcDevice">
         </div>
@@ -118,7 +118,7 @@
           <div id="dropdown5"></div>
         </div>
       </div>
-      <div class="mat-card">
+      <div class="mat-card" id="slcDownlink">
         <input type="text" id="encoded" value="HEX"></input>
         <button class="button" class="btn" title="copy to clipboard" id="clipboard" data-toggle="tooltip">&#128203;</button>
         <button class="button" class="btn" title="Send Downlink" id="btnDownlink" data-toggle="tooltip">&#10514;</button>
@@ -133,7 +133,14 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+  
+  <!-- indexedDB Wrapper -->
+  <!-- see: https://dexie.org/docs/API-Reference#quick-reference -->
+  <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+  
+  <!-- custom JS Files -->
   <!--<script src="./config.js"></script>-->
+  <script src="./general.js"></script>
   <script src="./schemes.js"></script>
   <script src="./encoder.js"></script>
   <script src="./decoder.js"></script>

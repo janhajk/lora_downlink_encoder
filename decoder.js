@@ -67,7 +67,7 @@
                   input.placeholder = title;
                   group.appendChild(label);
                   group.appendChild(input);
-                  return group;
+                  return [group, input];
             };
             let rowDom = function() {
                   let row = document.createElement('div');
@@ -76,21 +76,12 @@
             };
             let row = rowDom();
             container.append(row);
-            let hex = textfield('HEX Payload for ' + deviceSelector.scheme(), '');
-            row.appendChild(hex);
-            // submit button
-            let group = document.createElement('div');
-            group.className = 'form-group';
-            let button = document.createElement('button');
-            button.className = 'btn btn-info';
-            button.type = 'submit';
-            button.innerHTML = 'Decode';
-            group.appendChild(button);
-            container.appendChild(group);
+            let [hexcontainer, hex] = textfield('HEX Payload for ' + deviceSelector.scheme(), '');
+            row.appendChild(hexcontainer);
             row = rowDom();
             container.appendChild(row);
-            button.onclick = function() {
-                  let val = $(hex).find('input').val();
+            $(hex).on('keyup', function() {
+                  let val = $(hex).val();
                   let decoded = new Decoder[deviceSelector.scheme()](val).decode();
                   row.innerHTML = '';
                   for (let i in decoded) {
@@ -99,7 +90,7 @@
                         div.innerHTML = i + ': ' + decoded[i];
                         row.appendChild(div);
                   }
-            };
+            });
 
 
       };
