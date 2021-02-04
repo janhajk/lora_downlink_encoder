@@ -13,6 +13,40 @@
  */
 
 
+// Helper
+
+const twoComplementsEncoding = function(num) {
+      
+      const orig = bin.split('').reverse();
+      const bits = orig.length;
+      let comp = [];
+
+      let i = 0;
+      while (i < bits && orig[i] !== '1') {
+            comp[i] = orig[i];
+            ++i;
+      }
+      if (i >= bits) {
+            return comp.reverse().join('');
+      }
+      comp[i] = '1';
+      ++i;
+      while (i < bits) {
+            if (orig[i] === '1') {
+                  comp[i] = '0';
+            }
+            else if (orig[i] === '0') {
+                  comp[i] = '1';
+            }
+            else {
+                  comp[i] = orig[i];
+            }
+            ++i;
+      }
+      return comp.reverse().join('');
+};
+
+
 const schemes = {
       'abeeway_asset-tracker_2.0.0': {
             title: 'Message Type',
@@ -142,16 +176,43 @@ const schemes = {
 
                                                 }
                                           }, {
-                                                title: 'motion_duration',
-                                                description: 'Period of time required to detect the end of a motion',
-                                                value: 0x17,
+                                                title: 'motion_nb_pos',
+                                                value: 0x08,
+                                                description: 'Number of positions to report during motion events (motion start/end mode only).',
                                                 child: {
-                                                      type: 'range: s:60:3600',
+                                                      type: 'range::1:60',
+                                                      value: i => { parseInt(i, 10).toString(16) },
+                                                      len: 4
+
+                                                }
+                                          }, {
+                                                title: 'ble_beacon_cnt',
+                                                description: 'This parameter provides the maximum number of BLE beacons to provide in payload',
+                                                value: 0x0F,
+                                                child: {
+                                                      type: 'range::1:4',
                                                       value: i => { parseInt(i, 10).toString(16) },
                                                       len: 4
                                                 }
-                                          },
-                                          {
+                                          }, {
+                                                title: 'ble_beacon_timeout',
+                                                description: 'BLE Scan Duration in Seconds',
+                                                value: 0x10,
+                                                child: {
+                                                      type: 'range: s:1:5',
+                                                      value: i => { parseInt(i, 10).toString(16) },
+                                                      len: 4
+                                                }
+                                          }, {
+                                                title: 'ble_rssi_filter',
+                                                description: 'RSSI value to filter BLE beacons with BLE-GPS geolocation mode. (negative value, refer to the section Two’s complement Encoding for information for the encoding).',
+                                                value: 0x1A,
+                                                child: {
+                                                      type: 'range: s:-100:-40',
+                                                      value: i => { parseInt(i, 10).toString(16) },
+                                                      len: 4
+                                                }
+                                          }, {
                                                 title: 'collection_scan_type',
                                                 value: 0x21,
                                                 child: {
@@ -203,31 +264,68 @@ const schemes = {
                                                       }],
                                                       len: 4
                                                 }
-                                          },
-                                          {
+                                          }, {
                                                 title: 'collection_ble_filter_main_1',
+                                                description: 'Works only for iBeacon. Apply to the first 4 bytes of the UUID field. UUID[0..3]',
                                                 value: 0x24,
                                                 child: {
                                                       title: 'Part 1 BLE filter',
                                                       type: 'input:8',
                                                       len: 4
                                                 }
-                                          },
-                                          {
+                                          }, {
+                                                title: 'collection_ble_filter_main_2',
+                                                description: 'Works only for iBeacon. Apply to the next 4 bytes of the UUID field. UUID[3..7]',
+                                                value: 0x25,
+                                                child: {
+                                                      title: 'Part 2 BLE filter',
+                                                      type: 'input:8',
+                                                      len: 4
+                                                }
+                                          }, {
                                                 title: 'collection_ble_filter_sec_value',
+                                                description: 'Only works for iBeacon Mode. Apply to the following 4 bytes of the UUID field. UUID[8..11]',
                                                 value: 0x26,
                                                 child: {
                                                       title: 'BLE secondary value.',
                                                       type: 'input:8',
                                                       len: 4
                                                 }
-                                          },
-                                          {
+                                          }, {
                                                 title: 'collection_ble_filter_sec_mask',
+                                                description: 'Only works for iBeacon Mode. Apply to the following 4 bytes of the UUID field. UUID[8..11]',
                                                 value: 0x27,
                                                 child: {
                                                       title: 'BLE secondary mask',
                                                       type: 'input:8',
+                                                      len: 4
+                                                }
+                                          }, {
+                                                title: 'position_ble_filter_type',
+                                                description: '',
+                                                value: 0x4D,
+                                                child: {
+                                                      title: 'Filter Type',
+                                                      child: [],
+                                                      len: 4
+                                                }
+                                          },
+                                          {
+                                                title: 'position_ble_report_type',
+                                                description: 'Configure the BLE data to report in payloads.',
+                                                value: 0x52,
+                                                child: {
+                                                      title: 'Filter Type',
+                                                      value: [{
+                                                            title: 'MAC Adress',
+                                                            value: 0x00
+                                                      }, {
+                                                            title: 'Short ID',
+                                                            value: 0x01
+                                                      }, {
+                                                            title: 'Long ID',
+                                                            value: 0x02
+                                                      }],
                                                       len: 4
                                                 }
                                           }, {
@@ -238,8 +336,7 @@ const schemes = {
                                                       type: 'input:8',
                                                       len: 4
                                                 }
-                                          },
-                                          {
+                                          }, {
                                                 title: 'gnss_constellation',
                                                 value: 0x2A,
                                                 child: {
@@ -268,8 +365,7 @@ const schemes = {
                                                       }],
                                                       len: 4
                                                 }
-                                          },
-                                          {
+                                          }, {
                                                 title: 'gps_timeout',
                                                 description: 'Timeout for GPS scans before sending a GPS timeout message.',
                                                 value: 0x09,
@@ -277,8 +373,7 @@ const schemes = {
                                                       type: 'range:s:30:300',
                                                       len: 4
                                                 }
-                                          },
-                                          {
+                                          }, {
                                                 title: 'gps_ehpe',
                                                 description: 'Acceptable GPS horizontal error for GPS geolocation',
                                                 value: 0x0B,
@@ -306,7 +401,7 @@ const schemes = {
                                                 }
                                           },
                                           {
-                                                title: 'agps_timeou',
+                                                title: 'agps_timeout',
                                                 description: 'Timeout for LPGPSscans before sending thetimeout message',
                                                 value: 0x0A,
                                                 child: {
