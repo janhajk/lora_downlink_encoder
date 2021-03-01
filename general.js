@@ -1,4 +1,4 @@
-/* global $, localStorage, DEVICES, APP_TOKEN, deviceWiseEndpoint, APP_ID, THING_KEY */
+/* global $, localStorage, DEVICES, APP_TOKEN, deviceWiseEndpoint, APP_ID, THING_KEY, schemes, resetAll */
 
 const STORAGEKEY = 'cfgDistributor';
 
@@ -127,8 +127,21 @@ let DeviceSelector = function() {
       let devices = getConfig().devices;
       // Todo: Load last selection
       let curVal = devices.length ? [devices[0].id || devices[0].devEui] : false;
-      let curScheme = devices.length ? (devices[0].device_type || devices[0].type) : false;
-      this.update = function() {
+
+      let update = function() {
+            let devicesSelected = $(select).select2('data');
+            curVal = [];
+            for (let i = 0; i < devicesSelected.length; i++) {
+                  for (let r in devices) {
+                        if (devices[r].id === devicesSelected[i].id)
+                              curVal.push(devices[r]);
+                  }
+            }
+            resetAll();
+      };
+
+      // init form
+      this.init = function() {
             slcDevice.innerHTML = '';
             select = document.createElement('select');
             select.setAttribute('multiple', 'multiple');
@@ -148,16 +161,12 @@ let DeviceSelector = function() {
             $(select).select2({
                   width: '100%',
                   templateResult: i => $('<span>' + i.text + '</span><br /><i><span>' + i.title + '</span></i>')
-
             });
-            $(select).on('select2:select', function() {
-                  let devices = $(this).select2('data');
-                  curVal = [];
-                  for (let i = 0; i < devices.length; i++) curVal.push(devices[i].id);
-                  console.log('new items have been added!', curVal);
-            });
+            $(select).on('select2:select', update);
 
       };
+
+      // Ctrl-B select all that match current surch
       $(document).on('keypress', $('.select2-search__field'), function(event) {
             if (event.ctrlKey || event.metaKey) {
                   console.log('key pressed');
@@ -175,12 +184,12 @@ let DeviceSelector = function() {
             }
       });
       this.value = () => curVal;
-      this.scheme = () => curScheme;
+      this.scheme = () => curVal[0].device_type;
 
 };
 
 let deviceSelector = new DeviceSelector();
-deviceSelector.update();
+deviceSelector.init();
 
 
 const DeviceWiseConnector = function() {
@@ -200,9 +209,9 @@ let batchDownlink = async function(payload, port, arrThingId, validity) {
             downlinkProgress.show();
             for (let i = 0; i < arrThingId.length; i++) {
                   try {
-                        results.push(await downlink(payload, port, arrThingId[i], validity));
+                        results.push(await downlink(payload, port, arrThingId[i].id, validity));
                         downlinkProgress.update(Math.round((i + 1) / arrThingId.length * 100));
-                        console.log('sending downlink for device ' + arrThingId[i]);
+                        console.log('sending downlink for device ' + arrThingId[i].id);
                   }
                   catch (e) {
                         return reject(e);
@@ -432,14 +441,14 @@ let configDevices = function() {
       let fields = {
             name: {},
             id: {},
-            device_type: { type: 'dropdown', data: ['abeeway_asset-tracker_2.0.0'] }
+            device_type: { type: 'dropdown', data: Object.keys(schemes) }
       };
 
       let parentDom = document.getElementById('configFormDevices');
       parentDom.innerHTML = '';
       let textfield = function(title, placeholder) {
             let group = document.createElement('div');
-            group.className = 'col-sm-12   form-group';
+            group.className = 'col-sm-12 form-group';
             let label = document.createElement('label');
             label.className = 'form-control-label';
             label.innerHTML = title;

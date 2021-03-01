@@ -4,7 +4,7 @@
       let container = document.getElementById('decoder');
 
       const Decoder = {
-            'abeeway_asset-tracker_2.0.0': function(payload) {
+            'abeeway_asset-tracker_2.1': function(payload) {
                   payload = payload.toUpperCase();
                   let bytes = [];
                   for (let i = 0; i < payload.length; i = i + 2) {
@@ -15,8 +15,8 @@
                   this.decode = function() {
                         let res = {};
                         const message_type = payload.substr(0, 2);
-                        console.log(payload);
-                        console.log(message_type);
+                        // console.log(payload);
+                        // console.log(message_type);
                         switch (message_type) {
                               case '00':
                                     res.message_type = 'Frame pending';

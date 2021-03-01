@@ -163,7 +163,7 @@ let conf;
 
 $(document).ready(function() {
       $('[data-toggle="tooltip"]').tooltip();
-      resetAll();
+      // resetAll();
       // reset Button
       document.getElementById('btnReset').onclick = function() {
             resetAll();
