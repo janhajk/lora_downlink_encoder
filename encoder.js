@@ -246,13 +246,13 @@ let ConfItem = function(properties, parent, level) {
             confItem.currentSelectionByte = value;
             let conf;
             let index;
-            
+
             // since we only get a value, but not the scheme-item, we must find the selected scheme item in the selection through the given value
             if (confItem.value !== undefined && Array.isArray(confItem.value)) {
                   for (let i = 0; i < confItem.value.length; i++) {
                         let v;
 
-// if value is a function, feed it with first device
+                        // if value is a function, feed it with first device
                         if (isFunction(confItem.value[i].value)) {
                               v = confItem.value[i].value(deviceSelector.value()[0]);
                         }
@@ -260,7 +260,7 @@ let ConfItem = function(properties, parent, level) {
                               v = confItem.value[i].value;
                         }
 
-                        if (v == confItem.currentSelectionByte) {
+                        if (v.toString().toUpperCase() === confItem.currentSelectionByte.toString().toUpperCase()) {
                               index = i;
                               break;
                         }

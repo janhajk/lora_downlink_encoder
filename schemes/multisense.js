@@ -53,7 +53,7 @@ scheme.config = {
             {
                   title: 'Set Config',
                   value: function(device) {
-                        return device.config_param1.toUpperCase();
+                        return device.config_param1;
                   },
                   len: 4,
                   description: 'Set new Config parameter',
