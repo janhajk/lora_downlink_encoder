@@ -35,6 +35,14 @@ let ConfItem = function(properties, parent, level) {
                   o.value = 'null';
                   return o;
             };
+            let descriptionDom = function(text, parent) {
+                  if (text === undefined) return;
+                  let description = document.createElement('div');
+                  description.style.fontSize = '0.8em';
+                  description.style.fontStyle = 'italic';
+                  description.innerHTML = text;
+                  parent.appendChild(description);
+            };
             let widget; // dom element of widget
             // ACK
             if (self.title === 'ack') {
@@ -115,16 +123,16 @@ let ConfItem = function(properties, parent, level) {
                         widget = document.createElement('div');
                         for (let i = 0; i < self.multiform.length; i++) {
                               let container = document.createElement('div');
+                              container.className = 'multiform-part-container'
                               let id = 'multifield_' + new Date().valueOf();
                               // bool
                               if (self.multiform[i].type === 'bool') {
                                     let input = document.createElement('input');
                                     input.id = id + '_' + i;
                                     input.className = 'form-check-input';
-                                    container.className = 'form-check';
+                                    container.className = 'form-check form-switch';
                                     input.type = 'checkbox';
                                     input.onchange = () => value();
-                                    container.className += ' form-switch';
                                     self.multiform[i].value = () => input.checked;
                                     let label = document.createElement('label');
                                     label.for = id + '_' + i;
@@ -133,18 +141,15 @@ let ConfItem = function(properties, parent, level) {
                                     input.value = self.multiform[i].defaultValue || 0;
                                     container.appendChild(label)
                                     container.appendChild(input);
+                                    // Description
+                                    descriptionDom(self.multiform[i].description, container);
                               }
                               // options
                               else if (self.multiform[i].type === 'option') {
                                     let title = document.createElement('h4');
                                     title.innerHTML = self.multiform[i].label;
                                     container.appendChild(title);
-                                    if (self.multiform[i].description !== undefined) {
-                                          let description = document.createElement('div');
-                                          description.style.fontSize = '0.8em';
-                                          description.innerHTML = self.multiform[i].description;
-                                          container.appendChild(description);
-                                    }
+                                    descriptionDom(self.multiform[i].description, container);
                                     for (let r in self.multiform[i].options) {
                                           let subContainer = document.createElement('div');
                                           subContainer.className = 'form-check form-check-inline';
@@ -162,13 +167,14 @@ let ConfItem = function(properties, parent, level) {
                                     }
                                     self.multiform[i].value = () => $("input[type='radio'][name='" + id + '_' + i + "']:checked").val();
                               }
+                              // textfield
                               else {
                                     container.className += ' form-outline';
                                     let input = document.createElement('input');
                                     input.type = 'text';
                                     input.id = id + '_' + i;
-                                    input.className = 'form-constrol';
-                                    $(input).change(() => value());
+                                    input.className = 'form-control';
+                                    $(input).keyup(() => value());
                                     self.multiform[i].value = () => input.value;
                                     let label = document.createElement('label');
                                     label.for = id + '_' + i;
@@ -177,6 +183,7 @@ let ConfItem = function(properties, parent, level) {
                                     input.value = self.multiform[i].defaultValue || 0;
                                     container.appendChild(label);
                                     container.appendChild(input);
+                                    descriptionDom(self.multiform[i].description, container);
 
                               }
                               widget.appendChild(container);
@@ -274,14 +281,14 @@ let ConfItem = function(properties, parent, level) {
 
             // Update tree backwards
 
-            // // if item has parent, then update the whole hexcode up the tree ( true for every level but first/top level)
-            // if (parent.level !== undefined) {
-            //       parent.update(formatHex(confItem.currentSelectionByte, confItem.len !== undefined ? confItem.len : null));
-            // }
-            // // top level item
-            // else {
-            //       confItem.update('');
-            // }
+            // if item has parent, then update the whole hexcode up the tree ( true for every level but first/top level)
+            if (parent.level !== undefined) {
+                  parent.update(formatHex(confItem.currentSelectionByte, confItem.len !== undefined ? confItem.len : null));
+            }
+            // top level item
+            else {
+                  confItem.update('');
+            }
       };
 
       // transform a select into select2 object
@@ -308,7 +315,7 @@ let ConfItem = function(properties, parent, level) {
             }
             // Top Element > output HEX String
             else {
-                  parent.innerHTML = hexFormatWithSpaces('0x' + formatHex(this.currentSelectionByte, this.currentSelectionByte.length !== undefined ? this.currentSelectionByte.length/2 : null) + previous);
+                  parent.innerHTML = hexFormatWithSpaces('0x' + formatHex(this.currentSelectionByte, this.currentSelectionByte.length !== undefined ? this.currentSelectionByte.length / 2 : null) + previous);
             }
 
       };

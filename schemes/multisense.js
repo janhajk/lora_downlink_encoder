@@ -53,7 +53,7 @@ scheme.config = {
             {
                   title: 'Set Config',
                   value: function(device) {
-                        return device.id.substr(0, 4) + device.id.substr(-4);
+                        return device.config_param1;
                   },
                   len: 4,
                   description: 'Set new Config parameter',
@@ -123,7 +123,7 @@ scheme.config = {
                                     type: 'option',
                                     label: 'RF Power Level',
                                     description: '1 to 3, where 1 equals LOW POWER, 2 equals MEDIUM POWER and 3 equals HIGH POWER',
-                                    options: { 'Low Power': 1, 'Medium Power': 2, 'High Power': 3 },
+                                    options: { 'alte Firmware V1 = 0': 0, 'Low Power': 1, 'Medium Power': 2, 'High Power': 3 },
                                     defaultValue: 'Low Power',
                                     datatype: 'bit',
                                     len: 2

@@ -129,6 +129,8 @@ let DeviceSelector = function() {
       // Todo: Load last selection
       let curVal = devices.length ? [devices[0].id || devices[0].devEui] : false;
 
+      // fired when device is selected from select
+      // can be multiple devices
       let update = function() {
             let devicesSelected = $(select).select2('data');
             curVal = [];
@@ -138,6 +140,7 @@ let DeviceSelector = function() {
                               curVal.push(devices[r]);
                   }
             }
+            $('#titleEncoder').text(curVal[0].device_type + ' Encoder');
             resetAll();
       };
 
@@ -442,6 +445,7 @@ let configDevices = function() {
       let fields = {
             name: {},
             id: {},
+            config_param1: {},
             device_type: { type: 'dropdown', data: schemes.getDevices() }
       };
 
