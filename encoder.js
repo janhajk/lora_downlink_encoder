@@ -257,7 +257,7 @@ let ConfItem = function(properties, parent, level) {
                               v = confItem.value[i].value(deviceSelector.value()[0]);
                         }
                         else {
-                              v = confItem.value[i].value;
+                              v = formatHex(confItem.value[i].value, confItem.value[i].len);
                         }
 
                         if (v.toString().toUpperCase() === confItem.currentSelectionByte.toString().toUpperCase()) {
