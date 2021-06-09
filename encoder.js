@@ -207,7 +207,7 @@ let ConfItem = function(properties, parent, level) {
                               value = formatHex(self.value[i].value(deviceSelector.value()[0]), self.value[i].len || 1);
                         }
                         else {
-                              value = formatHex(self.value[i].value.toString(10), self.value[i].len || 1);
+                              value = formatHex(self.value[i].value.toString(16), self.value[i].len || 1);
                         }
                         option.value = value;
                         option.setAttribute('title', self.value[i].description);
@@ -254,13 +254,13 @@ let ConfItem = function(properties, parent, level) {
 
                         // if value is a function, feed it with first device
                         if (isFunction(confItem.value[i].value)) {
-                              v = confItem.value[i].value(deviceSelector.value()[0]);
+                              v = confItem.value[i].value(deviceSelector.value()[0]).toString().toUpperCase();
                         }
                         else {
-                              v = formatHex(confItem.value[i].value, confItem.value[i].len);
+                              v = formatHex(Number(confItem.value[i].value).toString(16), confItem.value[i].len);
                         }
 
-                        if (v.toString().toUpperCase() === confItem.currentSelectionByte.toString().toUpperCase()) {
+                        if (v === confItem.currentSelectionByte) {
                               index = i;
                               break;
                         }
