@@ -17,6 +17,7 @@ function Status(parent) {
       // container.style.position = 'absolute';
       container.style.height = '40px';
       this.set = function(message, status) {
+            if (status === undefined) status = 'success';
             container.className = 'alert alert-' + status;
             $(container).fadeIn(300, () => {
                   container.innerHTML = message;
@@ -184,7 +185,7 @@ let DeviceSelector = function() {
             }
       });
       this.value = () => curVal;
-      this.scheme = () => curVal[0].device_type;
+      this.scheme = () => schemes.get(curVal[0].device_type);
 
 };
 
@@ -399,7 +400,7 @@ let configDistributor = function() {
             }
             rowCounter++;
       }
-      // submit button
+      // save config
       let group = document.createElement('div');
       group.className = 'form-group';
       let button = document.createElement('button');
@@ -441,7 +442,7 @@ let configDevices = function() {
       let fields = {
             name: {},
             id: {},
-            device_type: { type: 'dropdown', data: Object.keys(schemes) }
+            device_type: { type: 'dropdown', data: schemes.getDevices() }
       };
 
       let parentDom = document.getElementById('configFormDevices');
@@ -500,7 +501,7 @@ let configDevices = function() {
             // New row after every two fields
             parentDom.appendChild(row);
       }
-      // submit button
+      // submit button > add device
       let group = document.createElement('div');
       group.className = 'form-group';
       let button = document.createElement('button');
@@ -516,9 +517,11 @@ let configDevices = function() {
                   }
                   else {
                         params[key] = $(fields[key].dom).find('input').val();
+                        $(fields[key].dom).find('input').val('');
                   }
             }
             console.log(params);
+            alrtStatus.set('Device added successfully!');
             updateConfig({ devices: params });
       };
       parentDom.append(group);
