@@ -27,7 +27,7 @@ let ConfItem = function(properties, parent, level) {
             }
       }
 
-      // return DOM <select> with <options>
+      // return DOM of current confItem
       this.dom = function() {
             let titleOption = function() {
                   let o = document.createElement('option');
@@ -43,14 +43,15 @@ let ConfItem = function(properties, parent, level) {
                   description.innerHTML = text;
                   parent.appendChild(description);
             };
-            let widget; // dom element of widget
+            let widget; // class variable of widget
+
             // ACK
             if (self.title === 'ack') {
                   widget = new dropdown();
                   widget.addOption(titleOption());
                   let option = document.createElement('option');
                   option.value = ack.get();
-                  option.innerHTML = '0x' + formatHex(parseInt(ack.get(), 10)) + ' - ack';
+                  option.innerHTML = '0x' + formatHex(ack.get()) + ' - ack';
                   widget.addOption(option);
             }
             // // value is function()
@@ -73,7 +74,7 @@ let ConfItem = function(properties, parent, level) {
                         slider1[1].oninput = function() {
                               let unit = type[1];
                               slider1[2].innerHTML = this.value + unit; // show value
-                              self.currentSelectionByte = parseInt(this.value, 10);
+                              self.currentSelectionByte = this.value;
                               // has parent item
                               if (parent.level !== undefined) {
                                     parent.update(formatHex(self.currentSelectionByte, self.len));
@@ -203,10 +204,10 @@ let ConfItem = function(properties, parent, level) {
                         let option = document.createElement('option');
                         let value;
                         if (isFunction(self.value[i].value)) {
-                              value = self.value[i].value(deviceSelector.value()[0]);
+                              value = formatHex(self.value[i].value(deviceSelector.value()[0]), self.value[i].len || 1);
                         }
                         else {
-                              value = self.value[i].value.toString(10); // 1-255
+                              value = formatHex(self.value[i].value.toString(10), self.value[i].len || 1);
                         }
                         option.value = value;
                         option.setAttribute('title', self.value[i].description);
@@ -217,11 +218,14 @@ let ConfItem = function(properties, parent, level) {
             else {
                   widget = document.createElement('div');
             }
+
+            // select2 for all dropdowns
             if (widget.type === 'dropdown') {
                   $(widget.select).on('select2:select', function() { self.navigate(this.value, self) });
                   self.select2select2(widget.select); // transform select into select2 object
 
             }
+
             return widget;
       };
 
@@ -231,8 +235,10 @@ let ConfItem = function(properties, parent, level) {
 
 
       // fired after select has been selected
+      // in case a multiform is loaded, this gets fired automatically
+      // value from last state is passed for variable/flex continuation
       this.navigate = function(value, confItem) {
-            if (value === 'null') return; // empty select (or title)
+            if (value === 'null') return; // empty select (or title); we don't want to load anything when last selection was a title
 
             confItem.currentSelectionByte = value;
             let conf;

@@ -140,7 +140,7 @@ const abeeway_all_firmware = {
 let Scheme = {
       'abeeway_asset-tracker_2.1': {
             device: 'abeeway_tracker',
-            supportedVersions: [],
+            supportedVersions: ['2.1.0', '2.1.3', '2.1.5'],
             defaultPort: 2,
             config: {
                   title: 'Message Type',

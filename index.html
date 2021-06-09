@@ -106,6 +106,9 @@
                   <button class="nav-link active" id="distributor-tab" data-bs-toggle="tab" data-bs-target="#mnDistributor" type="button" role="tab" aria-controls="mnDistributor" aria-selected="true">Distributor</button>
             </li>
             <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="add-devices-tab" data-bs-toggle="tab" data-bs-target="#mnAddDevices" type="button" role="tab" aria-controls="mnAddDevices" aria-selected="true">Add Devices</button>
+            </li>
+            <li class="nav-item" role="presentation">
                   <button class="nav-link" id="devices-tab" data-bs-toggle="tab" data-bs-target="#mnDevices" type="button" role="tab" aria-controls="mnDevices" aria-selected="true">Devices</button>
             </li>
           </ul>
@@ -113,8 +116,11 @@
             <div class="tab-pane fade show active" id="mnDistributor" role="tabpanel" aria-labelledby="distributor-tab">
               <div id="configFormDistributor"></div>
             </div>
-            <div class="tab-pane fade" id="mnDevices" role="tabpanel" aria-labelledby="devices-tab">
+            <div class="tab-pane fade" id="mnAddDevices" role="tabpanel" aria-labelledby="add-devices-tab">
               <div id="configFormDevices"></div>
+            </div>
+            <div class="tab-pane fade" id="mnDevices" role="tabpanel" aria-labelledby="devices-tab">
+              <div id="listDevices"></div>
             </div>
           </div>
         </div>

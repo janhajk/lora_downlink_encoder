@@ -51,7 +51,7 @@ let Ack = function() {
             localStorage.setItem('loraAck', frame);
             return frame;
       };
-      this.get = () => parseInt(frame, 10);
+      this.get = () => Number(frame).toString(16)
 };
 let ack = new Ack();
 
@@ -532,6 +532,40 @@ let configDevices = function() {
 
 };
 configDevices();
+
+
+/**
+ *
+ * List devices
+ *
+ *
+ */
+let ListDevices = function() {
+      let lstDevice = document.getElementById('listDevices');
+      lstDevice.className = 'list-group';
+      lstDevice.style.maxHeight = '600px';
+      lstDevice.style.overflow = 'scroll';
+
+      let devices = getConfig().devices;
+
+      // init form
+      this.init = function() {
+            $(lstDevice).empty();
+            devices = getConfig().devices; // always reload all devices
+            for (let i in devices) {
+                  let listItem = document.createElement('button');
+                  listItem.innerHTML = devices[i].name;
+                  listItem.type = 'button';
+                  listItem.className = 'list-group-item list-group-item-action';
+                  lstDevice.appendChild(listItem);
+            }
+      };
+
+};
+
+let listDevices = new ListDevices();
+listDevices.init();
+
 
 
 

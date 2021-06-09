@@ -42,13 +42,13 @@ scheme.config = {
                   title: 'Get Device Info',
                   value: 0x01,
                   description: '',
-                  port: 101
+                  port: 101,
             },
             {
                   title: 'Rejoin Set',
                   value: 0x01,
                   description: '',
-                  port: 102
+                  port: 102,
             },
             {
                   title: 'Set Config',
