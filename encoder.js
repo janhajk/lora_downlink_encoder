@@ -74,10 +74,10 @@ let ConfItem = function(properties, parent, level) {
                         slider1[1].oninput = function() {
                               let unit = type[1];
                               slider1[2].innerHTML = this.value + unit; // show value
-                              self.currentSelectionByte = this.value;
+                              self.currentSelectionByte = formatHex(Number(this.value).toString(16), self.len);
                               // has parent item
                               if (parent.level !== undefined) {
-                                    parent.update(formatHex(self.currentSelectionByte, self.len));
+                                    parent.update(self.currentSelectionByte);
                               }
                         };
                   }

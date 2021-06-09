@@ -62,9 +62,10 @@ scheme.config = {
                         type: 'multi',
                         multiform: [{
                                     type: 'bool',
-                                    label: 'Confirmed/Unconfirmed',
+                                    label: 'Confirmed',
                                     datatype: 'bit',
                                     defaultValue: 1,
+                                    description: '(on for confirmed, off for unconfirmed uplinks, not valid for TIMED EVENTS, TIMED EVENTS are always sent unconfirmed)',
                                     len: 1
                               },
                               {
@@ -77,7 +78,7 @@ scheme.config = {
                               },
                               {
                                     type: 'bool',
-                                    label: 'ADR ON/OFF',
+                                    label: 'ADR',
                                     datatype: 'bit',
                                     defaultValue: 0,
                                     len: 1
@@ -158,35 +159,35 @@ scheme.config = {
                                                             len: 8
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Button On/Off',
+                                                            label: 'Button',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Reed on/off',
+                                                            label: 'Reed',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Temperature On/Off',
+                                                            label: 'Temperature',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Humidity On/Off',
+                                                            label: 'Humidity',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Motion On/Off',
+                                                            label: 'Motion',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
@@ -200,21 +201,21 @@ scheme.config = {
                                                             len: 3
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Reed detection rising/falling',
+                                                            label: 'Reed detection rising/falling (off)',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Reed event On/Off',
+                                                            label: 'Reed event',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Reed Counter On/Off',
+                                                            label: 'Reed Counter',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
@@ -264,14 +265,14 @@ scheme.config = {
                                                             len: 6
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Humidity history On/Off',
+                                                            label: 'Humidity history',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Temperature history On/Off',
+                                                            label: 'Temperature history',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
@@ -285,21 +286,21 @@ scheme.config = {
                                                             len: 8
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Motion Event On/Off',
+                                                            label: 'Motion Event',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Motion Tx Raw On/Off',
+                                                            label: 'Motion Tx Raw',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
                                                             len: 1
                                                       }, {
                                                             type: 'bool',
-                                                            label: 'Motion Counter On/Off',
+                                                            label: 'Motion Counter',
                                                             description: '',
                                                             datatype: 'bit',
                                                             defaultValue: 0,
