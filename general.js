@@ -51,7 +51,7 @@ let Ack = function() {
             localStorage.setItem('loraAck', frame);
             return frame;
       };
-      this.get = () => Number(frame).toString(16)
+      this.get = () => Number(frame).toString(16);
 };
 let ack = new Ack();
 

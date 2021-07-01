@@ -4,7 +4,7 @@
       let container = document.getElementById('decoder');
 
       const Decoder = {
-            'abeeway_asset-tracker_2.1': function(payload) {
+            'abeeway_tracker': function(payload) {
                   payload = payload.toUpperCase();
                   let bytes = [];
                   for (let i = 0; i < payload.length; i = i + 2) {
@@ -238,7 +238,8 @@
                   let input = document.createElement('input');
                   input.className = 'form-control';
                   input.type = 'text';
-                  input.value = value;
+                  // input.value = value;
+                  input.placeholder = value;
                   input.placeholder = title;
                   group.appendChild(label);
                   group.appendChild(input);
@@ -251,13 +252,13 @@
             };
             let row = rowDom();
             container.append(row);
-            let [hexcontainer, hex] = textfield('HEX Payload for ' + deviceSelector.scheme(), '');
+            let [hexcontainer, hex] = textfield('HEX Payload', '<insert hex-payload here>');
             row.appendChild(hexcontainer);
             row = rowDom();
             container.appendChild(row);
             $(hex).on('keyup', function() {
                   let val = $(hex).val();
-                  let decoded = new Decoder[deviceSelector.scheme()](val).decode();
+                  let decoded = new Decoder[deviceSelector.scheme().device](val).decode();
                   row.innerHTML = '';
                   for (let i in decoded) {
                         let div = document.createElement('div');

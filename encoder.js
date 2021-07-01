@@ -98,22 +98,34 @@ let ConfItem = function(properties, parent, level) {
                   else if (type[0] === 'multi') {
                         let value = function() {
                               let bitstring = '';
-                              for (let i in self.multiform) {
-                                    let val = self.multiform[i].value();
-                                    if (self.multiform[i].type === 'bool') {
+                              let mf = self.multiform;
+                              // if (self.endianness === 'lsb') {
+                              //       mf = [];
+                              //       for (let i = self.multiform.length - 1; i >= 0; i--) {
+                              //             mf.push(self.multiform[i]);
+                              //       }
+                              // }
+                              for (let i in mf) {
+                                    let val = mf[i].value();
+                                    if (mf[i].type === 'bool') {
                                           bitstring += val ? 1 : 0;
                                     }
-                                    else if (self.multiform[i].type === 'options') {
-                                          bitstring += ('000000000000000' + (val >>> 0).toString(2)).substr(-self.multiform[i].len);
+                                    else if (mf[i].type === 'options') {
+                                          bitstring += ('00000000000000000000000000000000' + (val >>> 0).toString(2)).substr(-mf[i].len);
                                     }
+                                    // default: input
                                     else {
-                                          bitstring += ('000000000000000' + (val >>> 0).toString(2)).substr(-self.multiform[i].len);
+                                          bitstring += ('00000000000000000000000000000000' + (val >>> 0).toString(2)).substr(-mf[i].len);
                                     }
                               }
                               let val = bitstring.match(/.{1,8}/g); // split in byte-packages
+                              if (self.endianness === 'lsb'){ val = val.map(i => i.toString().split('').reverse().join(''));
+                                    val.reverse();
+                              }
                               val = val.map(i => parseInt(i, 2)); // convert every byte-package in byte
                               val = val.map(i => formatHex(i, 1)); // format every byte in hex-string
                               val = val.join('');
+                              val = formatHex(val, self.len);
                               self.currentSelectionByte = val;
                               // has parent item
                               if (parent.level !== undefined) {
@@ -124,7 +136,7 @@ let ConfItem = function(properties, parent, level) {
                         widget = document.createElement('div');
                         for (let i = 0; i < self.multiform.length; i++) {
                               let container = document.createElement('div');
-                              container.className = 'multiform-part-container'
+                              container.className = 'multiform-part-container';
                               let id = 'multifield_' + new Date().valueOf();
                               // bool
                               if (self.multiform[i].type === 'bool') {
@@ -140,7 +152,7 @@ let ConfItem = function(properties, parent, level) {
                                     label.className = 'form-check-label';
                                     label.innerHTML = self.multiform[i].label;
                                     input.value = self.multiform[i].defaultValue || 0;
-                                    container.appendChild(label)
+                                    container.appendChild(label);
                                     container.appendChild(input);
                                     // Description
                                     descriptionDom(self.multiform[i].description, container);
@@ -363,13 +375,14 @@ function resetAll() {
       }
       conf = new ConfItem(deviceSelector.scheme().config, encoded, 0);
       div.appendChild(conf.dom().container);
-      encoded.innerHTML = '<HEX>';
+      encoded.setAttribute('placeholder', '<HEX>');
+      encoded.innerHTML = '';
 }
 
 // send Downlink button
 document.getElementById('btnDownlink').onclick = function() {
       let tf = document.getElementById('encoded');
-      let value = tf.innerHTML.replace(/\s/gim, '').substr(2); // remove all "hex"-spaces and skip "0x"
+      let value = tf.value.replace(/\s/gim, '').substr(2); // remove all "hex"-spaces and skip "0x"
       let port = deviceSelector.scheme().defaultPort;
       batchDownlink(value, port, deviceSelector.value(), 3600)
             .then(data => {
@@ -388,7 +401,7 @@ document.getElementById('btnDownlink').onclick = function() {
 let clipy = document.getElementById('clipboard');
 clipy.onclick = function() {
       let tf = document.getElementById('encoded');
-      let value = tf.innerHTML;
+      let value = tf.value;
       value = value.replace(/\s/g, '');
       value = value.substr(2);
       tf.innerHTML = value;
