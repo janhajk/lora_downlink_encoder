@@ -1,5 +1,9 @@
 /* global $, schemes, alrtStatus, ack, deviceSelector,batchDownlink  */
 
+// This software is free for personal use.
+// For commercial use fees apply. Please contact hello@thingware.ch for licensing this software.
+// Created by: Jan Schär | https://shopofthings.ch
+
 function isFunction(functionToCheck) {
       return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
 }
