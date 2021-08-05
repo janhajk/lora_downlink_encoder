@@ -9,3 +9,14 @@ Run:
 6. Reload index.html
 7. Select device from list
 8. Create Config
+9. select device from list
+
+
+
+
+
+## License
+This software is free for personal use.
+For commercial use fees apply. Please contact hello@thingware.ch for licensing this software.
+(c) 2021 by Thingware GmbH
+<img src="https://shopofthings.ch/wp-content/uploads/2021/04/website_2021_logo_header_v3.svg" />
